@@ -9,7 +9,7 @@ export function devtools<T>(name = "Store"): Middleware<T> {
     if (!extension) {
       extension =
         (window as any).__REDUX_DEVTOOLS_EXTENSION__ ||
-        (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE;
+        (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 
       if (extension) {
         devtools = extension.connect({ name });
