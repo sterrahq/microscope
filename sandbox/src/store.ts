@@ -1,4 +1,5 @@
-import { value, withImmer } from "microscope";
+import { persisted } from "@sterra/microscope";
+import { withImmer } from "@sterra/microscope-immer";
 
 interface TodoItem {
   id: number;
@@ -8,17 +9,19 @@ interface TodoItem {
 
 type TodoItems = Array<TodoItem>;
 
-export const todosValue = withImmer(
-  value<TodoItems>([
+export const { value: _todosValue, hydrate } = persisted<TodoItems>(
+  "microscope:todos",
+  [
     {
       id: 1,
       content: "Buy some milk",
       done: false,
     },
-  ])
+  ],
+  { isSSR: true }
 );
 
-todosValue.set([]);
+export const todosValue = withImmer(_todosValue);
 
 export function createTodo(content: string) {
   const id = Math.random();

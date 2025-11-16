@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-
 import type { Middleware, PersistOptions } from "./types";
 import { createValue } from "./create-value";
 
@@ -48,31 +46,21 @@ export function createPersistedValue<T>(
 
   const store = createValue(persistedValue, [persistMiddleware]);
 
-  function useHydrate() {
-    const [hydrated, setHydrated] = useState(!isSSR);
+  function hydrate() {
+    try {
+      const storeEngine =
+        storage === "local" ? window.localStorage : window.sessionStorage;
+      const saved = storeEngine.getItem(key);
 
-    useEffect(() => {
-      if (!isSSR) return;
+      if (saved !== null) {
+        const deserialized = deserialize(saved);
 
-      try {
-        const storeEngine =
-          storage === "local" ? window.localStorage : window.sessionStorage;
-        const saved = storeEngine.getItem(key);
-
-        if (saved !== null) {
-          const deserialized = deserialize(saved);
-
-          store.set(deserialized);
-        }
-      } catch {
-        console.warn(`Failed to read persisted value for key "${key}"`);
+        store.set(deserialized);
       }
-
-      setHydrated(true);
-    }, []);
-
-    return hydrated;
+    } catch {
+      console.warn(`Failed to read persisted value for key "${key}"`);
+    }
   }
 
-  return { store, useHydrate };
+  return { value: store, hydrate };
 }

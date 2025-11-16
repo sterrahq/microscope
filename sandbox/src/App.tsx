@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { todosValue, createTodo, toggleDone } from "./store";
+import { todosValue, createTodo, toggleDone, hydrate } from "./store";
 
 function AddForm() {
   const [value, setValue] = useState("");
@@ -13,6 +13,10 @@ function AddForm() {
     createTodo(value.trim());
     setValue("");
   };
+
+  useEffect(() => {
+    hydrate();
+  }, []);
 
   return (
     <form onSubmit={handleSubmit}>
