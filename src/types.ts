@@ -13,10 +13,18 @@ export interface Store<T> {
   derive<S>(selector: Selector<T, S>, equalityFn?: EqualityFn<S>): Store<S>;
 }
 
+// ================
+
+export interface SyncStorageEngine {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+}
+
 export type StorageType = "local" | "session";
 
 export interface PersistOptions<T> {
-  storage?: StorageType;
+  storage?: StorageType | SyncStorageEngine;
   serialize?: (value: T) => string;
   deserialize?: (value: string) => T;
   isSSR?: boolean;

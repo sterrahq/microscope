@@ -1,4 +1,4 @@
-import type { Middleware, PersistOptions } from "./types";
+import type { Middleware, PersistOptions, SyncStorageEngine } from "./types";
 import { createValue } from "./create-value";
 
 export function createPersistedValue<T>(
@@ -13,13 +13,34 @@ export function createPersistedValue<T>(
     isSSR = false,
   } = options;
 
+  function getStorageEngine(): SyncStorageEngine | undefined {
+    if (typeof options.storage === "object") {
+      return options.storage;
+    }
+
+    if (isSSR || typeof window === "undefined") {
+      return undefined;
+    }
+
+    try {
+      return options.storage === "local"
+        ? window.localStorage
+        : window.sessionStorage;
+    } catch {
+      return undefined;
+    }
+  }
+
   let persistedValue: T = initial;
 
-  if (!isSSR && typeof window !== "undefined") {
+  /**
+   * Initial Read:
+   */
+  const engine = getStorageEngine();
+
+  if (engine) {
     try {
-      const storeEngine =
-        storage === "local" ? window.localStorage : window.sessionStorage;
-      const saved = storeEngine.getItem(key);
+      const saved = engine.getItem(key);
 
       if (saved !== null) {
         persistedValue = deserialize(saved);
@@ -30,12 +51,11 @@ export function createPersistedValue<T>(
   }
 
   const persistMiddleware: Middleware<T> = (_prev, next) => {
-    if (typeof window !== "undefined") {
-      try {
-        const storeEngine =
-          storage === "local" ? window.localStorage : window.sessionStorage;
+    const engine = getStorageEngine();
 
-        storeEngine.setItem(key, serialize(next));
+    if (engine) {
+      try {
+        engine.setItem(key, serialize(next));
       } catch {
         console.warn(`Failed to persist value for key "${key}"`);
       }
@@ -46,19 +66,23 @@ export function createPersistedValue<T>(
 
   const store = createValue(persistedValue, [persistMiddleware]);
 
+  /**
+   * Hydration Method:
+   */
   function hydrate() {
-    try {
-      const storeEngine =
-        storage === "local" ? window.localStorage : window.sessionStorage;
-      const saved = storeEngine.getItem(key);
+    const engine = getStorageEngine();
 
-      if (saved !== null) {
-        const deserialized = deserialize(saved);
+    if (engine) {
+      try {
+        const saved = engine.getItem(key);
 
-        store.set(deserialized);
+        if (saved !== null) {
+          const deserialized = deserialize(saved);
+          store.set(deserialized);
+        }
+      } catch {
+        console.warn(`Failed to read persisted value for key "${key}"`);
       }
-    } catch {
-      console.warn(`Failed to read persisted value for key "${key}"`);
     }
   }
 
