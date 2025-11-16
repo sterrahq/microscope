@@ -17,17 +17,8 @@
   "keywords": [],
   "author": "Maze Heart",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/remvze/microscope.git"
-  },
-  "bugs": {
-    "url": "https://github.com/remvze/microscope/issues"
-  },
-  "homepage": "https://github.com/remvze/microscope#readme",
   "peerDependencies": {
-    "react": ">=17",
-    "immer": ">=8.0.0"
+    "react": ">=17"
   },
   "devDependencies": {
     "@types/react": "^19.2.2",
