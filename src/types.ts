@@ -8,12 +8,12 @@ export type Middleware<T> = (
   prev: T,
   next: T,
   store: Store<T>,
-  actionName?: string
+  debugLabel?: string
 ) => T;
 
 export interface Store<T> {
   get(): T;
-  set(updater: StateUpdater<T>, actionName?: string): void;
+  set(updater: StateUpdater<T>, debugLabel?: string): void;
   setAsync(updater: (prev: T) => Promise<T>): Promise<void>;
   subscribe(listener: Listener<T>): () => void;
   use<S = T>(selector?: Selector<T, S>, equalityFn?: EqualityFn<S>): S;

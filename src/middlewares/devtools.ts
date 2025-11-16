@@ -5,9 +5,7 @@ export function devtools<T>(name = "Store"): Middleware<T> {
   let devtools: any;
   let isTimeTraveling = false;
 
-  return (prev, next, store, actionName) => {
-    console.log({ actionName });
-
+  return (prev, next, store, debugLabel) => {
     if (!extension) {
       extension =
         (window as any).__REDUX_DEVTOOLS_EXTENSION__ ||
@@ -43,7 +41,7 @@ export function devtools<T>(name = "Store"): Middleware<T> {
       return next;
     }
 
-    devtools?.send({ type: actionName ?? "set", payload: next }, next);
+    devtools?.send({ type: debugLabel ?? "set", payload: next }, next);
 
     return next;
   };
