@@ -13,10 +13,14 @@ export function createActions<T, A extends ActionMap<T>>(
     ? (...args: Parameters<A[K]>) => Promise<void>
     : (...args: Parameters<A[K]>) => void;
 } {
-  const wrapped: Partial<Record<keyof A, any>> = {};
+  const wrapped = {} as {
+    [K in keyof A]: ReturnType<A[K]> extends Promise<any>
+      ? (...args: Parameters<A[K]>) => Promise<void>
+      : (...args: Parameters<A[K]>) => void;
+  };
 
   for (const key of Object.keys(actions) as Array<keyof A>) {
-    wrapped[key] = (...args: any[]) => {
+    wrapped[key] = ((...args: any[]) => {
       const result = actions[key](...args);
 
       if (result instanceof Promise) {
@@ -24,8 +28,8 @@ export function createActions<T, A extends ActionMap<T>>(
       } else {
         store.set(result, key as string);
       }
-    };
+    }) as any;
   }
 
-  return wrapped as any;
+  return wrapped;
 }
