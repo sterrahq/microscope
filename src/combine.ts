@@ -1,7 +1,7 @@
 import type { Store } from "./types";
 import { createValue } from "./create-value";
 
-export function combine<T extends any[], R>(
+export function combine<T extends unknown[], R>(
   stores: { [K in keyof T]: Store<T[K]> },
   combiner: (...values: T) => R
 ): Store<R> {
