@@ -28,7 +28,7 @@ export function createTodo(content: string) {
 
   todosValue.set((prev) => {
     prev.push({ id, content, done: false });
-  });
+  }, "Create Todo");
 }
 
 export function toggleDone(id: number) {
@@ -38,5 +38,5 @@ export function toggleDone(id: number) {
     if (!todo) return;
 
     todo.done = !todo.done;
-  });
+  }, "Toggle Todo");
 }

@@ -6,6 +6,8 @@ export function devtools<T>(name = "Store"): Middleware<T> {
   let isTimeTraveling = false;
 
   return (prev, next, store, actionName) => {
+    console.log({ actionName });
+
     if (!extension) {
       extension =
         (window as any).__REDUX_DEVTOOLS_EXTENSION__ ||

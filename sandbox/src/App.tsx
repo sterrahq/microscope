@@ -14,10 +14,6 @@ function AddForm() {
     setValue("");
   };
 
-  useEffect(() => {
-    hydrate();
-  }, []);
-
   return (
     <form onSubmit={handleSubmit}>
       <input
@@ -55,6 +51,10 @@ function Todos() {
 }
 
 function App() {
+  useEffect(() => {
+    hydrate();
+  }, []);
+
   return (
     <>
       <h1>Microscopic Todos</h1>

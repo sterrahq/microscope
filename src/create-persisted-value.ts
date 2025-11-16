@@ -15,18 +15,16 @@ export function createPersistedValue<T>(
   } = options;
 
   function getStorageEngine(): SyncStorageEngine | undefined {
-    if (typeof options.storage === "object") {
-      return options.storage;
+    if (typeof storage === "object") {
+      return storage;
     }
 
-    if (isSSR || typeof window === "undefined") {
+    if (typeof window === "undefined") {
       return undefined;
     }
 
     try {
-      return options.storage === "local"
-        ? window.localStorage
-        : window.sessionStorage;
+      return storage === "local" ? window.localStorage : window.sessionStorage;
     } catch {
       return undefined;
     }
@@ -35,19 +33,25 @@ export function createPersistedValue<T>(
   let persistedValue: T = initial;
 
   /**
-   * Initial Read:
+   * Initial read:
+   * - If isSSR is false, we can attempt to read browser storage (when running in browser).
+   * - If isSSR is true, only attempt read if user provided a storage object (server shim).
    */
-  const engine = getStorageEngine();
+  const shouldAttemptInitialRead = !isSSR || typeof storage === "object";
 
-  if (engine) {
-    try {
-      const saved = engine.getItem(key);
+  if (shouldAttemptInitialRead) {
+    const engine = getStorageEngine();
 
-      if (saved !== null) {
-        persistedValue = deserialize(saved);
+    if (engine) {
+      try {
+        const saved = engine.getItem(key);
+
+        if (saved !== null) {
+          persistedValue = deserialize(saved);
+        }
+      } catch {
+        console.warn(`Failed to read persisted value for key "${key}"`);
       }
-    } catch {
-      console.warn(`Failed to read persisted value for key "${key}"`);
     }
   }
 
