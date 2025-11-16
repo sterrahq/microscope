@@ -2,6 +2,7 @@ export type * from "./types";
 
 export * from "./create-value";
 export * from "./create-persisted-value";
+export * from "./create-actions";
 
 export * from "./value";
 export * from "./persisted";
