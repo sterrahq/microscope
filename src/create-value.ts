@@ -31,6 +31,8 @@ export function createValue<T>(
         ? (updater as (prev: T) => T)(state)
         : updater;
 
+    if (Object.is(state, nextState)) return;
+
     const finalState = applyMiddlewares(state, nextState);
 
     if (!Object.is(state, finalState)) {
