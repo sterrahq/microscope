@@ -7,6 +7,7 @@ import type {
   StateUpdater,
   Selector,
   EqualityFn,
+  PatchUpdater,
 } from "./types";
 
 import { shallowEqual } from "./utils";
@@ -36,6 +37,19 @@ export function createValue<T>(
       state = finalState;
       listeners.forEach((l) => l(state));
     }
+  };
+
+  const patch = (updater: PatchUpdater<T>) => {
+    if (typeof state !== "object" || state === null) {
+      throw new Error("Cannot patch primitive state");
+    }
+
+    const partial =
+      typeof updater === "function"
+        ? (updater as (prev: T) => Partial<T>)(state)
+        : updater;
+
+    set({ ...state, ...partial });
   };
 
   const setAsync = async (updater: (prev: T) => Promise<T>) => {
@@ -89,5 +103,5 @@ export function createValue<T>(
     return derivedStore;
   }
 
-  return { get, set, setAsync, subscribe, use, derive };
+  return { get, set, setAsync, subscribe, use, derive, patch };
 }
