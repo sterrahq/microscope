@@ -23,7 +23,6 @@ export function createValue<T>(
   const store: Store<T> = {
     get,
     set,
-    setAsync,
     patch,
     subscribe,
     use,
@@ -68,15 +67,6 @@ export function createValue<T>(
         : updater;
 
     set({ ...state, ...partial }, debugLabel);
-  }
-
-  async function setAsync(
-    updater: (prev: T) => Promise<T>,
-    debugLabel?: string
-  ) {
-    const nextState = await updater(state);
-
-    set(nextState, debugLabel);
   }
 
   function subscribe(listener: Listener<T>) {
