@@ -1,4 +1,4 @@
-import { persisted } from "@sterra/microscope";
+import { devtools, persisted } from "@sterra/microscope";
 import { withImmer } from "@sterra/microscope-immer";
 
 interface TodoItem {
@@ -18,7 +18,7 @@ export const { value: _todosValue, hydrate } = persisted<TodoItems>(
       done: false,
     },
   ],
-  { isSSR: true }
+  { isSSR: true, middlewares: [devtools()] }
 );
 
 export const todosValue = withImmer(_todosValue);

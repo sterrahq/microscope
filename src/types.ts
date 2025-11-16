@@ -2,12 +2,18 @@ export type StateUpdater<T> = T | ((prev: T) => T) | ((prev: T) => void);
 export type Listener<T> = (state: T) => void;
 export type Selector<T, S> = (state: T) => S;
 export type EqualityFn<S> = (a: S, b: S) => boolean;
-export type Middleware<T> = (prev: T, next: T) => T;
 export type PatchUpdater<T> = Partial<T> | ((prev: T) => Partial<T>);
+
+export type Middleware<T> = (
+  prev: T,
+  next: T,
+  store: Store<T>,
+  actionName?: string
+) => T;
 
 export interface Store<T> {
   get(): T;
-  set(updater: StateUpdater<T>): void;
+  set(updater: StateUpdater<T>, actionName?: string): void;
   setAsync(updater: (prev: T) => Promise<T>): Promise<void>;
   subscribe(listener: Listener<T>): () => void;
   use<S = T>(selector?: Selector<T, S>, equalityFn?: EqualityFn<S>): S;
@@ -30,4 +36,5 @@ export interface PersistOptions<T> {
   serialize?: (value: T) => string;
   deserialize?: (value: string) => T;
   isSSR?: boolean;
+  middlewares?: Array<Middleware<T>>;
 }

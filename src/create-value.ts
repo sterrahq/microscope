@@ -17,15 +17,31 @@ export function createValue<T>(
   middlewares: Array<Middleware<T>> = []
 ): Store<T> {
   let state = typeof initial === "function" ? (initial as () => T)() : initial;
+
   const listeners = new Set<Listener<T>>();
 
-  const applyMiddlewares = (prev: T, next: T) => {
-    return middlewares.reduce((acc, fn) => fn(prev, acc), next);
+  const store: Store<T> = {
+    get,
+    set,
+    setAsync,
+    patch,
+    subscribe,
+    use,
+    derive,
   };
 
-  const get = () => state;
+  function applyMiddlewares(prev: T, next: T, actionName?: string) {
+    return middlewares.reduce(
+      (acc, fn) => fn(prev, acc, store, actionName),
+      next
+    );
+  }
 
-  const set = (updater: StateUpdater<T>) => {
+  function get() {
+    return state;
+  }
+
+  function set(updater: StateUpdater<T>, actionName?: string) {
     const nextState =
       typeof updater === "function"
         ? (updater as (prev: T) => T)(state)
@@ -33,15 +49,15 @@ export function createValue<T>(
 
     if (Object.is(state, nextState)) return;
 
-    const finalState = applyMiddlewares(state, nextState);
+    const finalState = applyMiddlewares(state, nextState, actionName);
 
     if (!Object.is(state, finalState)) {
       state = finalState;
       listeners.forEach((l) => l(state));
     }
-  };
+  }
 
-  const patch = (updater: PatchUpdater<T>) => {
+  function patch(updater: PatchUpdater<T>, actionName?: string) {
     if (typeof state !== "object" || state === null) {
       throw new Error("Cannot patch primitive state");
     }
@@ -51,20 +67,23 @@ export function createValue<T>(
         ? (updater as (prev: T) => Partial<T>)(state)
         : updater;
 
-    set({ ...state, ...partial });
-  };
+    set({ ...state, ...partial }, actionName);
+  }
 
-  const setAsync = async (updater: (prev: T) => Promise<T>) => {
+  async function setAsync(
+    updater: (prev: T) => Promise<T>,
+    actionName?: string
+  ) {
     const nextState = await updater(state);
 
-    set(nextState);
-  };
+    set(nextState, actionName);
+  }
 
-  const subscribe = (listener: Listener<T>) => {
+  function subscribe(listener: Listener<T>) {
     listeners.add(listener);
 
     return () => listeners.delete(listener);
-  };
+  }
 
   function use<S = T>(
     selector?: Selector<T, S>,
@@ -105,5 +124,5 @@ export function createValue<T>(
     return derivedStore;
   }
 
-  return { get, set, setAsync, subscribe, use, derive, patch };
+  return store;
 }

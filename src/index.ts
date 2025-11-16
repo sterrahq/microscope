@@ -8,5 +8,6 @@ export * from "./persisted";
 export * from "./combine";
 
 export * from "./middlewares/logger";
+export * from "./middlewares/devtools";
 
 export * from "./use-value";

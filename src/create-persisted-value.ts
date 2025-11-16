@@ -11,6 +11,7 @@ export function createPersistedValue<T>(
     serialize = JSON.stringify,
     deserialize = JSON.parse,
     isSSR = false,
+    middlewares = [],
   } = options;
 
   function getStorageEngine(): SyncStorageEngine | undefined {
@@ -64,7 +65,10 @@ export function createPersistedValue<T>(
     return next;
   };
 
-  const store = createValue(persistedValue, [persistMiddleware]);
+  const store = createValue(persistedValue, [
+    persistMiddleware,
+    ...middlewares,
+  ]);
 
   /**
    * Hydration Method:
