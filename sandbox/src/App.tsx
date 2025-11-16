@@ -1,25 +1,61 @@
-import "./App.css";
+import { useState } from "react";
 
-import { value } from "microscope";
+import { todosValue, createTodo, toggleDone } from "./store";
 
-const counter = value(0);
+function AddForm() {
+  const [value, setValue] = useState("");
 
-function App() {
-  const count = counter.use();
-  const increment = () => counter.set((prev) => prev + 1);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!value.trim()) return;
+
+    createTodo(value.trim());
+    setValue("");
+  };
 
   return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.currentTarget.value)}
+      />
+    </form>
+  );
+}
+
+function Todos() {
+  const todos = todosValue.use();
+
+  return (
+    <ul>
+      {todos.map((todo) => (
+        <li key={todo.id}>
+          <input
+            id={`todo-${todo.id}`}
+            type="checkbox"
+            onChange={() => toggleDone(todo.id)}
+            checked={todo.done}
+          />
+          <label
+            htmlFor={`todo-${todo.id}`}
+            style={{ textDecoration: todo.done ? "line-through" : "none" }}
+          >
+            {todo.content}
+          </label>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function App() {
+  return (
     <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={increment}>count is {count})</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>Microscopic Todos</h1>
+      <Todos />
+      <AddForm />
     </>
   );
 }
