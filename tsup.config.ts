@@ -7,6 +7,6 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   minify: true,
-  external: ["react", "react-dom"],
+  external: ["react", "immer"],
   banner: { js: '"use client";' },
 });

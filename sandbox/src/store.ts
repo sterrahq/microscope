@@ -1,4 +1,4 @@
-import { value } from "microscope";
+import { value, withImmer } from "microscope";
 
 interface TodoItem {
   id: number;
@@ -8,26 +8,32 @@ interface TodoItem {
 
 type TodoItems = Array<TodoItem>;
 
-export const todosValue = value<TodoItems>([
-  {
-    id: 1,
-    content: "Buy some milk",
-    done: false,
-  },
-]);
+export const todosValue = withImmer(
+  value<TodoItems>([
+    {
+      id: 1,
+      content: "Buy some milk",
+      done: false,
+    },
+  ])
+);
+
+todosValue.set([]);
 
 export function createTodo(content: string) {
   const id = Math.random();
 
-  todosValue.set((prev) => [...prev, { id, content, done: false }]);
+  todosValue.set((prev) => {
+    prev.push({ id, content, done: false });
+  });
 }
 
 export function toggleDone(id: number) {
-  todosValue.set((prev) =>
-    prev.map((todo) => {
-      if (todo.id !== id) return todo;
+  todosValue.set((prev) => {
+    const todo = prev.find((todo) => todo.id === id);
 
-      return { ...todo, done: !todo.done };
-    })
-  );
+    if (!todo) return;
+
+    todo.done = !todo.done;
+  });
 }

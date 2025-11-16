@@ -10,3 +10,5 @@ export * from "./combine";
 export * from "./middlewares/logger";
 
 export * from "./use-value";
+
+export * from "./with-immer";

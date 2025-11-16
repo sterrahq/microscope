@@ -44,14 +44,6 @@ export function createValue<T>(
     set(nextState);
   };
 
-  const patch = (partial: Partial<T>) => {
-    if (typeof state !== "object" || state === null) {
-      throw new Error("Cannot patch primitive state");
-    }
-
-    set({ ...state, ...partial });
-  };
-
   const subscribe = (listener: Listener<T>) => {
     listeners.add(listener);
 
@@ -97,5 +89,5 @@ export function createValue<T>(
     return derivedStore;
   }
 
-  return { get, set, setAsync, patch, subscribe, use, derive };
+  return { get, set, setAsync, subscribe, use, derive };
 }
