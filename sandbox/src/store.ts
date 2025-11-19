@@ -1,4 +1,4 @@
-import { createActions, devtools, persisted } from "@sterra/microscope";
+import { devtools, persisted } from "@sterra/microscope";
 import { withImmer } from "@sterra/microscope-immer";
 
 interface TodoItem {
@@ -23,20 +23,18 @@ export const { value: _todosValue, hydrate } = persisted<TodoItems>(
 
 export const todosValue = withImmer(_todosValue);
 
-export const actions = createActions(todosValue, {
-  createTodo(content: string) {
-    return (prev) => {
-      prev.push({ id: Math.random(), content, done: false });
-    };
-  },
+export function createTodo(content: string) {
+  todosValue.set((prev) => {
+    prev.push({ id: Math.random(), content, done: false });
+  });
+}
 
-  toggleDone(id: number) {
-    return (prev) => {
-      const todo = prev.find((todo) => todo.id === id);
+export function toggleDone(id: number) {
+  todosValue.set((prev) => {
+    const todo = prev.find((todo) => todo.id === id);
 
-      if (!todo) return;
+    if (!todo) return;
 
-      todo.done = !todo.done;
-    };
-  },
-});
+    todo.done = !todo.done;
+  });
+}

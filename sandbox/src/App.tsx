@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { todosValue, actions, hydrate } from "./store";
+import { todosValue, createTodo, toggleDone, hydrate } from "./store";
 
 function AddForm() {
   const [value, setValue] = useState("");
@@ -10,7 +10,7 @@ function AddForm() {
 
     if (!value.trim()) return;
 
-    actions.createTodo(value.trim());
+    createTodo(value.trim());
     setValue("");
   };
 
@@ -35,7 +35,7 @@ function Todos() {
           <input
             id={`todo-${todo.id}`}
             type="checkbox"
-            onChange={() => actions.toggleDone(todo.id)}
+            onChange={() => toggleDone(todo.id)}
             checked={todo.done}
           />
           <label
