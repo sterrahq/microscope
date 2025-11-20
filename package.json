@@ -12,7 +12,8 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "size": "size-limit"
   },
   "keywords": [],
   "author": "Maze Heart",
@@ -21,8 +22,10 @@
     "react": ">=17"
   },
   "devDependencies": {
+    "@size-limit/preset-small-lib": "^11.2.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "size-limit": "^11.2.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3"
   }
