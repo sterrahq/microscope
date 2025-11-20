@@ -4,16 +4,11 @@ export type Selector<T, S> = (state: T) => S;
 export type EqualityFn<S> = (a: S, b: S) => boolean;
 export type PatchUpdater<T> = Partial<T> | ((prev: T) => Partial<T>);
 
-export type Middleware<T> = (
-  prev: T,
-  next: T,
-  store: Store<T>,
-  debugLabel?: string
-) => T;
+export type Middleware<T> = (prev: T, next: T, store: Store<T>) => T;
 
 export interface Store<T> {
   get(): T;
-  set(updater: StateUpdater<T>, debugLabel?: string): void;
+  set(updater: StateUpdater<T>): void;
   subscribe(listener: Listener<T>): () => void;
   use<S = T>(selector?: Selector<T, S>, equalityFn?: EqualityFn<S>): S;
   derive<S>(selector: Selector<T, S>, equalityFn?: EqualityFn<S>): Store<S>;

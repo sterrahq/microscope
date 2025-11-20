@@ -29,18 +29,15 @@ export function createValue<T>(
     derive,
   };
 
-  function applyMiddlewares(prev: T, next: T, debugLabel?: string) {
-    return middlewares.reduce(
-      (acc, fn) => fn(prev, acc, store, debugLabel),
-      next
-    );
+  function applyMiddlewares(prev: T, next: T) {
+    return middlewares.reduce((acc, fn) => fn(prev, acc, store), next);
   }
 
   function get() {
     return state;
   }
 
-  function set(updater: StateUpdater<T>, debugLabel?: string) {
+  function set(updater: StateUpdater<T>) {
     const nextState =
       typeof updater === "function"
         ? (updater as (prev: T) => T)(state)
@@ -48,7 +45,7 @@ export function createValue<T>(
 
     if (Object.is(state, nextState)) return;
 
-    const finalState = applyMiddlewares(state, nextState, debugLabel);
+    const finalState = applyMiddlewares(state, nextState);
 
     if (!Object.is(state, finalState)) {
       state = finalState;
@@ -56,7 +53,7 @@ export function createValue<T>(
     }
   }
 
-  function patch(updater: PatchUpdater<T>, debugLabel?: string) {
+  function patch(updater: PatchUpdater<T>) {
     if (typeof state !== "object" || state === null) {
       throw new Error("Cannot patch primitive state");
     }
@@ -66,7 +63,7 @@ export function createValue<T>(
         ? (updater as (prev: T) => Partial<T>)(state)
         : updater;
 
-    set({ ...state, ...partial }, debugLabel);
+    set({ ...state, ...partial });
   }
 
   function subscribe(listener: Listener<T>) {
