@@ -18,6 +18,14 @@
   "keywords": [],
   "author": "Maze Heart",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sterrahq/microscope.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sterrahq/microscope/issues"
+  },
+  "homepage": "https://github.com/sterrahq/microscope#readme",
   "peerDependencies": {
     "react": ">=17"
   },
