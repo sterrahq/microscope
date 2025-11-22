@@ -2,6 +2,24 @@
 
 > Atomic state manager for React.
 
+## Table of Contents
+
+- ✨ [Feature](#feature)
+- 📦 [Installation](#installation)
+- 🚀 [Quick Start](#quick-start)
+- 📚 [Core Concepts](#core-concepts)
+- 🛠️ [Utilities](#utilities)
+- 🛡️ [Middlewares](#middlewares)
+- 🧩 [Integrations](#integrations)
+
+## Features
+
+- 🧬 **Small core**: A minimal API that’s easy to learn and easy to debug.
+- 🎯 **Focused updates**: Components only re-render when the part of the state they care about actually changes.
+- 🔧 **Useful utilities**: Persistence, derived values, and store combinations without extra packages.
+- 🛠️ **Clear behavior**: No hidden magic or unexpected side effects.
+- 🚫 **Low overhead**: Lightweight by design, both conceptually and in bytes.
+
 ## Installation
 
 ```bash
