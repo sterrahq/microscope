@@ -1,18 +1,24 @@
-import type { Store } from "./types";
+import type { ReadonlyStore, Store } from "./types";
 import { store } from "./store";
 
 export function combine<T extends unknown[], R>(
   stores: { [K in keyof T]: Store<T[K]> },
   combiner: (...values: T) => R
-): Store<R> {
+): ReadonlyStore<R> {
   const getValues = () => stores.map((s) => s.get()) as unknown as T;
-  const combined = store(combiner(...getValues()));
+
+  const initialValue = combiner(...getValues());
+  const combinedStore = store<R>(initialValue);
 
   const update = () => {
-    combined.set(combiner(...getValues()));
+    combinedStore.set(combiner(...getValues()));
   };
 
   stores.forEach((s) => s.subscribe(update));
 
-  return combined;
+  return {
+    get: combinedStore.get,
+    subscribe: combinedStore.subscribe,
+    derive: combinedStore.derive,
+  };
 }

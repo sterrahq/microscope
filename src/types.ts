@@ -10,13 +10,18 @@ export interface Store<T> {
   get(): T;
   set(updater: StateUpdater<T>): void;
   subscribe(listener: Listener<T>): () => void;
-  derive<S>(selector: Selector<T, S>, equalityFn?: EqualityFn<S>): Store<S>;
+  derive<S>(
+    selector: Selector<T, S>,
+    equalityFn?: EqualityFn<S>
+  ): ReadonlyStore<S>;
   patch(updaters: PatchUpdater<T>): void;
 }
 
 export type PersistedStore<T> = Store<T> & {
   hydrate(): void;
 };
+
+export type ReadonlyStore<T> = Omit<Store<T>, "set" | "patch">;
 
 export interface SyncStorageEngine {
   getItem(key: string): string | null;

@@ -1,6 +1,6 @@
 [
   {
     "path": "dist/index.js",
-    "import": "{ value }"
+    "import": "{ store }"
   }
 ]

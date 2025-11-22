@@ -6,6 +6,7 @@ import type {
   Selector,
   EqualityFn,
   PatchUpdater,
+  ReadonlyStore,
 } from "./types";
 
 import { shallowEqual } from "./utils";
@@ -72,7 +73,7 @@ export function store<T>(
   function derive<S>(
     selector: Selector<T, S>,
     equalityFn: EqualityFn<S> = shallowEqual
-  ): Store<S> {
+  ): ReadonlyStore<S> {
     let cached: S = selector(state);
     const derivedStore = store<S>(cached);
 
@@ -85,7 +86,11 @@ export function store<T>(
       }
     });
 
-    return derivedStore;
+    return {
+      get: derivedStore.get,
+      subscribe: derivedStore.subscribe,
+      derive: derivedStore.derive,
+    };
   }
 
   return storeObject;
