@@ -10,12 +10,13 @@ export interface Store<T> {
   get(): T;
   set(updater: StateUpdater<T>): void;
   subscribe(listener: Listener<T>): () => void;
-  use<S = T>(selector?: Selector<T, S>, equalityFn?: EqualityFn<S>): S;
   derive<S>(selector: Selector<T, S>, equalityFn?: EqualityFn<S>): Store<S>;
   patch(updaters: PatchUpdater<T>): void;
 }
 
-// ================
+export type PersistedStore<T> = Store<T> & {
+  hydrate(): void;
+};
 
 export interface SyncStorageEngine {
   getItem(key: string): string | null;
@@ -29,6 +30,6 @@ export interface PersistOptions<T> {
   storage?: StorageType | SyncStorageEngine;
   serialize?: (value: T) => string;
   deserialize?: (value: string) => T;
-  isSSR?: boolean;
+  skipHydration?: boolean;
   middlewares?: Array<Middleware<T>>;
 }

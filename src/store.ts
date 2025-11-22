@@ -1,5 +1,3 @@
-import { useSyncExternalStore, useRef } from "react";
-
 import type {
   Middleware,
   Store,
@@ -12,7 +10,7 @@ import type {
 
 import { shallowEqual } from "./utils";
 
-export function createValue<T>(
+export function store<T>(
   initial: T,
   middlewares: Array<Middleware<T>> = []
 ): Store<T> {
@@ -20,17 +18,16 @@ export function createValue<T>(
 
   const listeners = new Set<Listener<T>>();
 
-  const store: Store<T> = {
+  const storeObject: Store<T> = {
     get,
     set,
     patch,
     subscribe,
-    use,
     derive,
   };
 
   function applyMiddlewares(prev: T, next: T) {
-    return middlewares.reduce((acc, fn) => fn(prev, acc, store), next);
+    return middlewares.reduce((acc, fn) => fn(prev, acc, storeObject), next);
   }
 
   function get() {
@@ -72,32 +69,12 @@ export function createValue<T>(
     return () => listeners.delete(listener);
   }
 
-  function use<S = T>(
-    selector?: Selector<T, S>,
-    equalityFn: EqualityFn<S> = shallowEqual
-  ) {
-    const sel = selector ?? ((s: T) => s as unknown as S);
-    const lastValueRef = useRef(sel(state));
-
-    return useSyncExternalStore(
-      subscribe,
-      () => {
-        const selected = sel(state);
-        if (!equalityFn(lastValueRef.current, selected)) {
-          lastValueRef.current = selected;
-        }
-        return lastValueRef.current;
-      },
-      () => lastValueRef.current
-    );
-  }
-
   function derive<S>(
     selector: Selector<T, S>,
     equalityFn: EqualityFn<S> = shallowEqual
   ): Store<S> {
     let cached: S = selector(state);
-    const derivedStore = createValue<S>(cached);
+    const derivedStore = store<S>(cached);
 
     subscribe((nextState) => {
       const newValue = selector(nextState);
@@ -111,5 +88,5 @@ export function createValue<T>(
     return derivedStore;
   }
 
-  return store;
+  return storeObject;
 }

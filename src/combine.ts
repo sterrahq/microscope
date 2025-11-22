@@ -1,12 +1,12 @@
 import type { Store } from "./types";
-import { createValue } from "./create-value";
+import { store } from "./store";
 
 export function combine<T extends unknown[], R>(
   stores: { [K in keyof T]: Store<T[K]> },
   combiner: (...values: T) => R
 ): Store<R> {
   const getValues = () => stores.map((s) => s.get()) as unknown as T;
-  const combined = createValue(combiner(...getValues()));
+  const combined = store(combiner(...getValues()));
 
   const update = () => {
     combined.set(combiner(...getValues()));
