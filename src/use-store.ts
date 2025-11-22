@@ -2,8 +2,13 @@ import { useRef, useCallback, useSyncExternalStore } from "react";
 import { Selector, EqualityFn, Store } from "./types";
 import { shallowEqual } from "./utils";
 
+interface Readable<T> {
+  get: () => T;
+  subscribe: (listener: (state: T) => void) => () => void;
+}
+
 export function useStore<T, S = T>(
-  store: Store<T>,
+  store: Readable<T>,
   selector?: Selector<T, S>,
   equalityFn: EqualityFn<S> = shallowEqual
 ): S {

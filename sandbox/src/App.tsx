@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { todosValue, createTodo, toggleDone, hydrate } from "./store";
+import { $todos, createTodo, toggleDone } from "./store";
+import { useStore } from "@sterra/microscope";
 
 function AddForm() {
   const [value, setValue] = useState("");
@@ -26,7 +27,7 @@ function AddForm() {
 }
 
 function Todos() {
-  const todos = todosValue.use();
+  const todos = useStore($todos);
 
   return (
     <ul>
@@ -52,7 +53,7 @@ function Todos() {
 
 function App() {
   useEffect(() => {
-    hydrate();
+    $todos.hydrate();
   }, []);
 
   return (

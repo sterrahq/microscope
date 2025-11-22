@@ -9,28 +9,28 @@ interface TodoItem {
 
 type TodoItems = Array<TodoItem>;
 
-export const { value: _todosValue, hydrate } = persisted<TodoItems>(
-  "microscope:todos",
-  [
-    {
-      id: 1,
-      content: "Buy some milk",
-      done: false,
-    },
-  ],
-  { isSSR: true }
+export const $todos = withImmer(
+  persisted<TodoItems>(
+    "microscope:todos",
+    [
+      {
+        id: 1,
+        content: "Buy some milk",
+        done: false,
+      },
+    ],
+    { skipHydration: true }
+  )
 );
 
-export const todosValue = withImmer(_todosValue);
-
 export function createTodo(content: string) {
-  todosValue.set((prev) => {
+  $todos.set((prev) => {
     prev.push({ id: Math.random(), content, done: false });
   });
 }
 
 export function toggleDone(id: number) {
-  todosValue.set((prev) => {
+  $todos.set((prev) => {
     const todo = prev.find((todo) => todo.id === id);
 
     if (!todo) return;

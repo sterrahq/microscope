@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@sterra/microscope-immer": "^0.0.3",
+    "@sterra/microscope-immer": "^0.0.6",
     "immer": "^10.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
